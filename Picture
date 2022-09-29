@@ -1,0 +1,91 @@
+import java.awt.*;
+import java.awt.event.*;
+import java.awt.image.*;
+import java.io.*;
+import javax.imageio.*;
+import javax.swing.*;
+public class Picture extends Component
+{
+    BufferedImage img = null;
+    
+    public void paint(Graphics g) {
+        g.drawImage(img, 0, 0, null);
+    }
+    
+    public Picture(int x){
+        try {
+            img = ImageIO.read(new File("aimg_" + x + ".jpg"));
+            } catch (IOException e) {
+        }
+        
+    }
+        
+    public Picture(int y, int useless) {
+    	try {
+            img = ImageIO.read(new File("img_" + y + ".jpg"));
+            } catch (IOException e) {
+        }
+    }
+        
+ 
+    
+    public int getColor(int xx, int yy) 
+  { 
+    	
+     /* get the value at the location from the picture as a 32 bit int
+     * with alpha, red, green, blue each taking 8 bits from left to right
+     */
+    int value = img.getRGB(xx,yy);
+
+    // get the red value (starts at 17 so shift right 16)
+    // then AND it with all 1's for the first 8 bits to 
+    // end up with a resulting value from 0 to 255 
+    int red = (value >> 16) & 0xff;
+    
+    // get the green value (starts at 9 so shift right 8)
+    int green = (value >>  8) & 0xff;
+    
+    // get the blue value (starts at 0 so no shift required)
+    int blue = value & 0xff;
+    
+    //average greyscale value
+    int val = (red + green + blue) / 3;
+    
+    return val;
+    //System.out.println(red +" "+ green +" "+ blue);
+    //return new Color(red,green,blue);
+  }
+    
+       public Dimension getPreferredSize() {
+        if (img == null) {
+             return new Dimension(100,100);
+        } else {
+           return new Dimension(img.getWidth(null), img.getHeight(null));
+       }
+    }
+ 
+    
+    public static void main(String[] args) {
+ 
+        JFrame f = new JFrame("Load Image Sample");
+             
+        f.addWindowListener(new WindowAdapter(){
+                public void windowClosing(WindowEvent e) {
+                    System.exit(0);
+                }
+            });
+        Picture pp = new Picture(1);
+        f.add(pp);
+        int count =0;
+        for(int i = 0; i < 28; i++){
+            for(int j = 0; j < 28; j++){
+                pp.getColor(i,j);
+                count++;
+            }
+        }
+        System.out.print(count);
+        f.pack();
+        f.setVisible(true);
+        
+    }
+}

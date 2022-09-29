@@ -1,0 +1,28 @@
+import java.util.List;
+
+public class NeuralNetworkRunner {
+	
+	public static void main(String[] args) {
+		
+		List<Double> output;
+		
+		//trains the neural network
+		NeuralNetwork computer = new NeuralNetwork(784, 64, 10);
+		NumberDataMaker nova = new NumberDataMaker(42000, 784, true);
+		computer.determine(nova.getNumSet(), nova.getResultSet(), 800000);
+		
+		//tests the neural network
+		NumberDataMaker tester = new NumberDataMaker(20, 784, false);
+		for(double[] d: tester.getNumSet()) {
+			output = computer.predict(d);
+			//prints the result from the neural network test as an easy to read integer, instead of an array with 10 values
+				double max = Integer.MIN_VALUE;
+				for(int cx = 0; cx < output.size(); cx++) {
+					if(output.get(cx) > max) {
+						max = output.get(cx);
+					}
+				}
+				System.out.println(output.indexOf(max));
+		}
+	}
+}

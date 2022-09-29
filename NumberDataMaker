@@ -1,0 +1,74 @@
+
+public class NumberDataMaker {
+	private double[][] NumSet;
+	private double[][]ResultSet;
+	
+	public NumberDataMaker(int r, int t, boolean TrainingPicture) {
+		
+		//sets numset to include all the data for the pictures
+		double[][] temp = new double[r][t];
+				
+		if(TrainingPicture == true) {
+			for(int c = 0; c < r; c++) {
+				//fills each row with pixel data from each image
+				int counter = 0;
+				Picture pp = new Picture(c);
+				for(int i = 0; i < 28; i++){
+			        for(int j = 0; j < 28; j++){
+			            	int color = pp.getColor(i,j);
+			            	temp[c][counter] = (color/255);
+			            	counter++;	
+			        }
+			    }
+			}
+		} else {
+			for(int c = 0; c < r; c++) {
+				//fills each row with pixel data from each image
+				int counter = 0;
+				Picture jp = new Picture(c, 9);
+				for(int i = 0; i < 28; i++){
+			        for(int j = 0; j < 28; j++){
+			            	int color = jp.getColor(i,j);
+			            	temp[c][counter] = (color/255);
+			            	counter++;	
+			        }
+			    }
+			}
+		}
+				
+				NumSet = temp;
+			
+		//sets resultset to all the proper outputs, ex. 1 is [0,1,0,0,0,0,0,0,0,0]
+		double[][] results = new double[r][10];
+		
+			for(int i = 0; i < r; i++) { 
+				for(int j = 0; j < 10; j++)	{
+					//Boolean methods for if statement.
+					//check to see if number is within the correct range, as well as if j is at the correct indication spot
+					boolean zero = (i < 4132) && (j==0);
+					boolean one = (4131 < i && i < 8816) && (j==1);
+					boolean two = (8815 < i && i < 12993) && (j==2);
+					boolean three = (12992 < i && i < 17344) && (j==3);
+					boolean four = (17343 < i && i < 21416) && (j==4);
+					boolean five = (21415 < i && i < 25211) && (j==5);
+					boolean six = (25210 < i && i < 29348) && (j==6);
+					boolean seven = (29347 < i && i < 33749) && (j==7);
+					boolean eight = (33748 < i && i < 37812) && (j==8);
+					boolean nine = (37811 < i && i < 42000) && (j==9);
+					
+					if(zero || one || two || three || four || five || six || seven || eight || nine) results[i][j] = 1; else results[i][j] = 0;
+					
+				}		
+			}
+			ResultSet = results;		
+	}
+	
+	public double[][] getNumSet(){
+		return NumSet;
+	}
+	
+	public double[][] getResultSet(){
+		return ResultSet;
+	}
+	
+}

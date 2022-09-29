@@ -1,0 +1,81 @@
+import java.util.List;
+
+public class NeuralNetwork {
+	Matrix weights_ih;//weigth between input and hidden layer
+	Matrix weights_ho;//weight between hidden and output layer
+	Matrix bias_h;//bias for hidden layer
+	Matrix bias_o;//bias for output layer
+	double learningRate = 0.05;//how quickly changes are made to the data
+	
+	//constructor for the data in the class
+	public NeuralNetwork(int i, int h, int o ) {
+		weights_ih = new Matrix(h,i);
+		weights_ho = new Matrix(o,h);
+		bias_h = new Matrix(h,1);
+		bias_o = new Matrix(o, 1);	
+	}
+	
+	public void train(double[] in, double[] res) {
+		//first forward pass
+		Matrix input = Matrix.fromArray(in);
+		Matrix hidden = Matrix.multiply(weights_ih, input);
+		hidden.add(bias_h);
+		hidden.sigmoid();
+		
+		//second forward pass
+		Matrix output = Matrix.multiply(weights_ho, hidden);
+		output.add(bias_o);
+		output.sigmoid();
+		
+		//begin backpropagation (basically based on the difference between what we wanted and what we got, 
+		//slight tweaks are made to the weights/ strength between connections. Determined by the average desired change
+		Matrix target = Matrix.fromArray(res);
+		
+		//output to hidden backpropagation
+		Matrix error = Matrix.subtract(target, output);
+        Matrix gradient = output.dsigmoid();
+        gradient.multiply(error);
+        gradient.multiply(learningRate);
+        Matrix hidden_T = Matrix.transpose(hidden);
+        Matrix who_delta =  Matrix.multiply(gradient, hidden_T);
+        weights_ho.add(who_delta);
+        bias_o.add(gradient);
+        
+      //hidden to input backpropagation
+        Matrix who_T = Matrix.transpose(weights_ho);
+        Matrix hidden_errors = Matrix.multiply(who_T, error);
+        Matrix h_gradient = hidden.dsigmoid();
+        h_gradient.multiply(hidden_errors);
+        h_gradient.multiply(learningRate);
+        Matrix i_T = Matrix.transpose(input);
+        Matrix wih_delta = Matrix.multiply(h_gradient, i_T);
+        weights_ih.add(wih_delta);
+        bias_h.add(h_gradient);
+	}
+	
+	//method used to determine the changes in weights necessary to get the desired outputs
+	public void determine(double[][]INPUT, double[][]OUTPUT, int iterations ) {
+		for(int i = 0; i < iterations; i++) {
+			int randy = (int)(Math.random()*INPUT.length);
+				this.train(INPUT[randy], OUTPUT[randy]);
+				
+			
+		}
+	}
+	
+	
+	//Method used for when we test if the neural network is correct. 
+	public List<Double> predict(double[] X)
+    {
+        Matrix input = Matrix.fromArray(X);
+        Matrix hidden = Matrix.multiply(weights_ih, input);
+        hidden.add(bias_h);
+        hidden.sigmoid();
+        
+        Matrix output = Matrix.multiply(weights_ho,hidden);
+        output.add(bias_o);
+        output.sigmoid();
+        
+        return output.toArray();
+    }
+}
